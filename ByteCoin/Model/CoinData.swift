@@ -8,10 +8,6 @@
 
 import Foundation
 
-struct CoinData: Codable {
-    
-    let code: String
-    let codeIn: String
-    let bid: Double
-    
+struct CoinData: Decodable {
+    let bid: String
 }

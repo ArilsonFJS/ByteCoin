@@ -20,6 +20,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
+        service.delegate = self
     }
 }
 
@@ -44,4 +45,20 @@ extension ViewController: UIPickerViewDelegate {
         let selectedCurrency = service.currencyArray[row]
         service.fetchCoin(for: selectedCurrency)
     }
+}
+
+extension ViewController: CoinServiceDelegate {
+   
+    func didUpdatePrice(price: String, currency: String) {
+        DispatchQueue.main.async {
+            self.bitcoinLabel.text = price
+            self.currencyLabel.text = currency
+        }
+    }
+    
+    func didFailWithError(error: any Error) {
+        print(error.localizedDescription)
+    }
+    
+    
 }

@@ -8,44 +8,54 @@
 
 import Foundation
 
-struct Service {
+protocol CoinServiceDelegate {
+    func didUpdatePrice(price: String, currency: String)
+        func didFailWithError(error: Error)
+}
+
+class Service {
     
     let baseURL = "https://economia.awesomeapi.com.br/json/last/BTC-" //"https://rest.coinapi.io/v1/exchangerate/BTC"
-    let apiKey = "SUA_APIKEY"
+    let apiKey = "02d16eb7f261d02d00f5bfdd13651773797b3fae909beca5846bf9790f1ac58a"
     
     let currencyArray = ["AUD", "BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
     
+    var delegate: CoinServiceDelegate?
+    
     func performRequest(urlString: String) {
+        
+    }
+    
+    func fetchCoin(for currency: String) {
+        let urlString = "\(baseURL)\(currency)?token=\(apiKey)"
+        
         guard let url = URL(string: urlString) else { return }
         
         let session = URLSession.shared.dataTask(with: url) { data, response, error in
             if error != nil {
                 print(error?.localizedDescription)
+                self.delegate?.didFailWithError(error: error!)
             }
             
             if let safeData = data {
-                let json = String(data: safeData, encoding: .utf8)
-                print(json)
+                if let bitcoinPrice = self.parseJson(safeData) {
+                    let priceString = String(format: "%.2f", bitcoinPrice)
+                    self.delegate?.didUpdatePrice(price: priceString, currency: currency)
+                }
             }
         }.resume()
+        //performRequest(urlString: url)
     }
     
-    func fetchCoin(for currency: String) {
-        let url = "\(baseURL)\(currency)?token=\(apiKey)"
-        print(url)
-        performRequest(urlString: url)
-    }
-    
-    func parseJson(_ coinData: Data) -> CoinModel? {
+    func parseJson(_ coinData: Data) -> String? {
         let jsonDecoder = JSONDecoder()
-        
+        let json = String(data: coinData, encoding: .utf8)
+        print("DADOS RETORNADOS DA API: \(json)")
         do {
-            let decodeData = try jsonDecoder.decode(CoinData.self, from: coinData)
-            let target = decodeData.code
-            let source = decodeData.codeIn
-            let value = decodeData.bid
-            let coin = CoinModel(targetCurrency: target, sourceCurrency: source, rate: value)
-            return coin
+            let decodeData = try jsonDecoder.decode(APIResponse.self, from: coinData)
+            let lastPrice = decodeData.BTCBRL.bid
+            print(lastPrice)
+            return lastPrice
         }catch {
             print(error.localizedDescription)
             return nil
