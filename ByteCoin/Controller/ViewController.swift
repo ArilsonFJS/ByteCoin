@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var currencyPicker: UIPickerView!
     @IBOutlet weak var currencyLabel: UILabel!
     
-    let coinManager = CoinManager()
+    let service = Service()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,13 +30,18 @@ extension ViewController: UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        coinManager.currencyArray.count
+        service.currencyArray.count
     }
 }
 
 //MARK: - UIPickerViewDelegate
 extension ViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return coinManager.currencyArray[row]
+        return service.currencyArray[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let selectedCurrency = service.currencyArray[row]
+        service.fetchCoin(for: selectedCurrency)
     }
 }
