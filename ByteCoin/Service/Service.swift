@@ -16,7 +16,7 @@ protocol CoinServiceDelegate {
 class Service {
     
     let baseURL = "https://economia.awesomeapi.com.br/json/last/BTC-" //"https://rest.coinapi.io/v1/exchangerate/BTC"
-    let apiKey = "02d16eb7f261d02d00f5bfdd13651773797b3fae909beca5846bf9790f1ac58a"
+    let apiKey = ""
     
     let currencyArray = ["AUD", "BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
     
